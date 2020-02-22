@@ -4,4 +4,4 @@ Boilerplate of actix-web & diesel in docker
 ## Usage
 1. rename `.env.example` to `.env`
 2. `docker-compose up`
-3. `docker exec actix-web_diesel_bp_1 diesel migration run`
+3. `docker exec {API container name} diesel migration run`
