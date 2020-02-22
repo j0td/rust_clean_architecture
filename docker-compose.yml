@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  db:
+    image: mysql:8.0.16
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - 3306:3306
+  api:
+    build:
+      context: .
+      dockerfile: ./dockerfile/api/Dockerfile
+    command: cargo watch -x run
+    volumes:
+      - ./:/app
+    ports:
+      - 8080:8080
+    depends_on:
+      - db

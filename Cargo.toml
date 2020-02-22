@@ -1,0 +1,21 @@
+[package]
+name = "actix-web_diesel_boilerplate"
+version = "0.1.0"
+authors = ["Masato Ebisawa <j0td5ta0d1mt@icloud.com>"]
+edition = "2018"
+
+[[bin]]
+name = "actix-web_diesel_boilerplate"
+path = "src/main.rs"
+
+[dependencies]
+actix-web = "2"
+actix-rt = "1"
+
+bytes = "0.5"
+diesel = { version = "1.4.0", features = ["mysql"] }
+dotenv = "0.15"
+env_logger = "0.7"
+futures = "0.3.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
