@@ -1,4 +1,4 @@
-FROM rust:1.41
+FROM rust:1.44
 
 RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install -y default-mysql-client

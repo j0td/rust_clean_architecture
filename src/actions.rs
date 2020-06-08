@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 
-use crate::models;
+use crate::domain::model::models;
 use diesel::mysql::MysqlConnection;
 
 pub fn find_user_by_uid(user_id: i32, conn: &MysqlConnection) -> Result<Option<models::User>, diesel::result::Error> {
