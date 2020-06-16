@@ -13,6 +13,7 @@ pub fn establish_connection() -> MysqlConnection {
     MysqlConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
 }
 
+// curl -X POST -H "Content-Type: application/json" http://localhost:8080/user -d '{"name": "hoge"}'
 #[get("/user/{user_id}")]
 async fn get_user(user_id: web::Path<i32>) -> Result<HttpResponse, Error> {
     println!("GEGEGEGE");
