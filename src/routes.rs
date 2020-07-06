@@ -1,51 +1,35 @@
-use actix_web::{get, post, web, Error, HttpResponse};
-use std::env;
-use dotenv::dotenv;
-use diesel::prelude::*;
-use diesel::mysql::MysqlConnection;
-use crate::actions;
-use crate::domain::model::models;
+use actix_web::{web, middleware, App, HttpServer};
+use crate::interface::controller;
 
-pub fn establish_connection() -> MysqlConnection {
-    dotenv().ok();
+pub async fn initialize() -> std::io::Result<()> {
+    let bind = "0.0.0.0:8080";
 
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    MysqlConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
+    println!("Starting server at: {}", &bind);
+
+    // どうしよ.....
+    // つくってみますか(よくわからないけれど)
+    // interfaceもstructも一つのファイルの中にかけるのだろうか
+    
+    // i := Registry.NewRegistory(conn)
+    // registoryというインターフェイスをつくる感じです？？ ⇛ そのはず！！
+    // interface Registory {
+    //      
+    // }
+    //   TODO registory.rsにNewRegistoryというメソッドを作成する、これはregistoryがinterfaceとして持っていて
+    //   registoryのstructを返す registoryは要素にconnを持つ
+
+    // hogeController := i.NewHogeController()
+    //   TODO registoryにNewHogeControllerというハンドラーを作成するメソッドを用意してcontroller structを返す
+    //   controller structはGetUserメソッドをインターフェースに持ち、実装されている
+
+    HttpServer::new(move || {
+        App::new()
+            .wrap(middleware::Logger::default())
+            .route("/user/{user_id}", web::get().to(controller::user::get_user))
+            .route("/user", web::post().to(controller::user::add_user))
+    })
+    .bind(&bind)?
+    .run()
+    .await
 }
 
-// curl -X POST -H "Content-Type: application/json" http://localhost:8080/user -d '{"name": "hoge"}'
-#[get("/user/{user_id}")]
-async fn get_user(user_id: web::Path<i32>) -> Result<HttpResponse, Error> {
-    println!("GEGEGEGE");
-    let user_id = user_id.into_inner();
-    let conn = establish_connection();
-
-    let user = web::block(move || actions::find_user_by_uid(user_id, &conn))
-        .await
-        .map_err(|e| {
-            eprintln!("{}", e);
-            HttpResponse::InternalServerError().finish()
-        })?;
-
-    if let Some(user) = user {
-        Ok(HttpResponse::Ok().json(user))
-    } else {
-        let res = HttpResponse::NotFound()
-            .body(format!("No user found with uid: {}", user_id));
-        Ok(res)
-    }
-}
-
-#[post("/user")]
-async fn add_user(form: web::Json<models::NewUser>) -> Result<HttpResponse, Error> {
-    let conn = establish_connection();
-
-    let user = web::block(move || actions::insert_new_user(&form.name, &conn))
-        .await
-        .map_err(|e| {
-            eprintln!("{}", e);
-            HttpResponse::InternalServerError().finish()
-        })?;
-
-    Ok(HttpResponse::Ok().json(user))
-}
